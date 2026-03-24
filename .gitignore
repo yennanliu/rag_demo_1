@@ -50,3 +50,6 @@ models/
 # Flask
 instance/
 .webassets-cache
+
+# JS
+node_modules/

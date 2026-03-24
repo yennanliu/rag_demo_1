@@ -207,7 +207,17 @@ Helpful Answer:
 
 **Testing:**
 - `tests/` - Unit tests for all components
+  - `test_rag.py` - RAG core functionality tests (9 tests)
+  - `test_config_manager.py` - Configuration management tests (8 tests)
+  - `test_conversation_manager.py` - Conversation persistence tests (16 tests)
+  - `test_app.py` - Flask API endpoint tests (16 tests)
+  - `app.test.js` - JavaScript frontend tests (24 tests)
 - `pytest.ini` - Pytest configuration
+- `conftest.py` - Pytest shared fixtures
+- `package.json` - Node.js dependencies and Jest configuration
+
+**CI/CD:**
+- `.github/workflows/ci.yml` - GitHub Actions CI workflow
 
 ## Configuration
 
@@ -265,7 +275,7 @@ All variables are loaded from `.env` automatically:
 
 ## Testing
 
-### Run Unit Tests
+### Python Tests
 
 Install dev dependencies and run tests:
 
@@ -289,6 +299,33 @@ uv run pytest -v
 uv run pytest -m "not llm"
 ```
 
+**Python test files:**
+- `tests/test_rag.py` - RAG functionality tests
+- `tests/test_config_manager.py` - Configuration tests
+- `tests/test_conversation_manager.py` - Conversation persistence tests
+- `tests/test_app.py` - API endpoint tests
+
+### JavaScript Tests
+
+Run the JavaScript test suite:
+
+```bash
+# Install Node dependencies (first time only)
+npm install
+
+# Run all JavaScript tests
+npm test
+
+# Run with coverage
+npm run test:coverage
+
+# Run in watch mode
+npm run test:watch
+```
+
+**JavaScript test files:**
+- `tests/app.test.js` - Frontend RAGApp class tests (24 test cases)
+
 ### Test Coverage
 
 The test suite covers:
@@ -296,12 +333,7 @@ The test suite covers:
 - ✅ **Config manager** - Load, save, backward compatibility
 - ✅ **Conversation manager** - Save, load, export, import
 - ✅ **API endpoints** - All Flask routes and error handling
-
-**Test files:**
-- `tests/test_rag.py` - RAG functionality tests
-- `tests/test_config_manager.py` - Configuration tests
-- `tests/test_conversation_manager.py` - Conversation persistence tests
-- `tests/test_app.py` - API endpoint tests
+- ✅ **Frontend JavaScript** - LocalStorage, message management, UI helpers, API integration
 
 ### Running LLM Tests
 
@@ -311,6 +343,18 @@ Some tests require OpenAI API calls and are skipped by default:
 # Run all tests including LLM tests
 uv run pytest --run-llm
 ```
+
+### Continuous Integration
+
+The project includes a GitHub Actions CI workflow (`.github/workflows/ci.yml`) that automatically:
+1. Syncs Python dependencies with `uv sync`
+2. Runs all Python unit tests
+3. Runs all JavaScript unit tests
+4. Generates coverage reports (optional)
+
+The workflow runs on:
+- Push to `main` or `develop` branches
+- All pull requests to `main`
 
 ## Notes
 
