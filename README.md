@@ -15,11 +15,13 @@ A minimal, elegant Retrieval-Augmented Generation (RAG) system using Python with
 ## Features
 
 - **🌐 Interactive web interface** - Beautiful UI for demos and experimentation
+- **📊 Knowledge visualizations** - Interactive 2D/3D embeddings plots and similarity heatmaps
+- **📖 Swagger API documentation** - Complete OpenAPI/Swagger docs for all endpoints
 - **Simple in-memory vector database** - No external DB setup required
 - **Semantic search** - Uses sentence transformers for embeddings
 - **LLM integration** - OpenAI API for answer generation
 - **Clean prompt engineering** - Following RAG best practices from the docs
-- **Minimal dependencies** - Flask, OpenAI, sentence-transformers, and numpy
+- **Comprehensive testing** - Python (pytest) and JavaScript (Jest) test suites with CI/CD
 
 ## Setup
 
@@ -83,6 +85,16 @@ Then open http://localhost:5000 in your browser.
 - 🎨 **Modern UI** - Clean, responsive interface with smooth animations
 - ⌨️ **Keyboard shortcuts** - Fast workflow for power users
 - 🏗️ **Clean architecture** - Modular code with separation of concerns
+- 📊 **Visualizations** - Interactive charts showing document embeddings and similarities
+- 📖 **API Documentation** - Swagger/OpenAPI docs for all REST endpoints
+
+**Access points:**
+- **Main UI**: http://localhost:5000
+- **Visualizations**: http://localhost:5000/visualizations - Interactive charts showing:
+  - 2D and 3D t-SNE projections of document embeddings
+  - Cosine similarity heatmap between documents
+  - Knowledge base statistics
+- **API Documentation**: http://localhost:5000/api/docs - Complete Swagger UI for all REST endpoints
 
 **Keyboard shortcuts:**
 - `Enter` to send message in chat
