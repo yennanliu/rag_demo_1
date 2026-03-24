@@ -31,6 +31,12 @@ Then open: **http://localhost:5000**
 2. Click "Ask Question" or press `Ctrl+Enter`
 3. The AI will answer based on your knowledge base
 
+### Configure Sample Documents
+1. Scroll to "Sample Documents Configuration"
+2. Add, edit, or remove sample documents
+3. Click "Save Config" to persist changes to `config.json`
+4. Click "Reload from Config" to reset knowledge base with saved samples
+
 ### Manage Documents
 - **View All Documents**: See everything in the knowledge base
 - **Clear All**: Reset the knowledge base

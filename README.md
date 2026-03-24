@@ -70,8 +70,10 @@ Then open http://localhost:5000 in your browser.
 - Add documents to the knowledge base in real-time
 - Ask questions and get AI-powered answers
 - View all documents in the knowledge base
+- Configure sample documents that load on startup
+- Edit and save configuration directly in the UI
 - Clear and reset the knowledge base
-- Clean, modern UI with instant feedback
+- Clean, modern white-themed UI with smooth animations
 
 **Keyboard shortcuts:**
 - `Ctrl+Enter` in document field: Add document
@@ -165,15 +167,38 @@ Helpful Answer:
 ## Files
 
 - `app.py` - Flask web app for interactive demo
-- `templates/index.html` - Web UI (clean, modern interface)
+- `templates/index.html` - Web UI (clean, modern white theme)
 - `rag.py` - Core RAG implementation
 - `rag_local.py` - Optional local LLM variant
 - `example.py` - Command-line usage examples
 - `pyproject.toml` - Project configuration for UV
+- `config.json` - Sample documents configuration (user-editable, not committed)
+- `config.example.json` - Example config file template
 - `QUICKSTART.md` - Quick start guide (3 steps)
 - `README.md` - Full documentation (this file)
 - `.env.example` - Example environment variables (copy and fill)
 - `.env` - Local environment variables (not committed to git)
+
+## Configuration
+
+### Sample Documents (`config.json`)
+
+The web app loads sample documents from `config.json` on startup. You can edit this:
+
+1. **Via Web UI**: Go to the "Sample Documents Configuration" section
+2. **Via File**: Edit `config.json` directly
+
+Example `config.json`:
+```json
+{
+  "sample_documents": [
+    "Your first sample document",
+    "Your second sample document"
+  ]
+}
+```
+
+The config file is auto-created on first run. Use `config.example.json` as a template.
 
 ## Environment Variables
 

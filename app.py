@@ -1,5 +1,6 @@
 """Simple Flask web app for interactive RAG demo."""
 
+import json
 from pathlib import Path
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
@@ -10,17 +11,30 @@ load_dotenv(Path(__file__).parent / ".env")
 
 app = Flask(__name__)
 
+# Config file path
+CONFIG_FILE = Path(__file__).parent / "config.json"
+
+
+def load_config():
+    """Load configuration from config.json."""
+    if CONFIG_FILE.exists():
+        with open(CONFIG_FILE, "r") as f:
+            return json.load(f)
+    return {"sample_documents": []}
+
+
+def save_config(config):
+    """Save configuration to config.json."""
+    with open(CONFIG_FILE, "w") as f:
+        json.dump(config, f, indent=2)
+
+
 # Initialize RAG system
 rag = SimpleRAG()
 
-# Pre-load some sample documents
-SAMPLE_DOCS = [
-    "Tony Q is a Senior Software Engineer with 10+ years of experience in distributed systems.",
-    "Tony Q specializes in backend architecture and high-concurrency ticket systems.",
-    "Tony Q's expertise includes Go, Kubernetes, and cloud infrastructure.",
-]
-
-for doc in SAMPLE_DOCS:
+# Load and add sample documents from config
+config = load_config()
+for doc in config.get("sample_documents", []):
     rag.add_document(doc)
 
 
@@ -91,6 +105,49 @@ def clear_documents():
         "success": True,
         "message": "Knowledge base cleared"
     })
+
+
+@app.route("/api/config", methods=["GET"])
+def get_config():
+    """Get current configuration."""
+    config = load_config()
+    return jsonify({
+        "success": True,
+        "config": config
+    })
+
+
+@app.route("/api/config", methods=["POST"])
+def update_config():
+    """Update configuration."""
+    try:
+        data = request.json
+        new_config = data.get("config", {})
+        save_config(new_config)
+        return jsonify({
+            "success": True,
+            "message": "Configuration saved successfully"
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/reload", methods=["POST"])
+def reload_samples():
+    """Reload sample documents from config."""
+    global rag
+    try:
+        rag = SimpleRAG()
+        config = load_config()
+        for doc in config.get("sample_documents", []):
+            rag.add_document(doc)
+        return jsonify({
+            "success": True,
+            "message": f"Reloaded {len(rag.documents)} sample documents",
+            "total_docs": len(rag.documents)
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 if __name__ == "__main__":

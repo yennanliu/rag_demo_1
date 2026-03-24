@@ -37,6 +37,9 @@ env/
 .env
 .env.local
 
+# User configuration
+config.json
+
 # Models
 models/
 *.bin
