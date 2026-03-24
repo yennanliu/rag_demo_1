@@ -75,10 +75,20 @@ def query():
         if not question:
             return jsonify({"success": False, "error": "Question is required"}), 400
 
-        answer = rag.generate_answer(question)
+        # Get relevant documents first
+        top_k = data.get("top_k", 3)
+        retrieved_docs = rag.retrieve(question, top_k)
+
+        # Generate answer
+        answer = rag.generate_answer(question, top_k)
+
+        # Extract source texts
+        sources = [doc["text"] for doc in retrieved_docs]
+
         return jsonify({
             "success": True,
             "answer": answer,
+            "sources": sources,
             "total_docs": len(rag.documents)
         })
 
@@ -94,6 +104,31 @@ def get_documents():
         "documents": [doc["text"] for doc in rag.documents],
         "total": len(rag.documents)
     })
+
+
+@app.route("/api/delete", methods=["POST"])
+def delete_document():
+    """Delete a specific document by index."""
+    try:
+        data = request.json
+        index = data.get("index")
+
+        if index is None or index < 0 or index >= len(rag.documents):
+            return jsonify({"success": False, "error": "Invalid document index"}), 400
+
+        # Remove document and its embedding
+        import numpy as np
+        rag.documents.pop(index)
+        rag.embeddings = np.delete(rag.embeddings, index, axis=0)
+
+        return jsonify({
+            "success": True,
+            "message": "Document deleted",
+            "total_docs": len(rag.documents)
+        })
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @app.route("/api/clear", methods=["POST"])

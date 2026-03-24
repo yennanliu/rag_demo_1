@@ -71,17 +71,18 @@ uv run python app.py
 Then open http://localhost:5000 in your browser.
 
 **Features:**
-- Add documents to the knowledge base in real-time
-- Ask questions and get AI-powered answers
-- View all documents in the knowledge base
-- Configure sample documents that load on startup
-- Edit and save configuration directly in the UI
-- Clear and reset the knowledge base
-- Clean, modern white-themed UI with smooth animations
+- 💬 **Chat-style conversation** - Full conversation history with context
+- 📚 **Show source documents** - See which docs were used for each answer
+- ➕ **Document management** - Add, view, delete individual documents
+- 📥 **Export/Import** - Save and load knowledge bases as JSON
+- ⚙️ **Configure samples** - Edit default documents that load on startup
+- 🎨 **Modern UI** - Clean, responsive interface with smooth animations
+- ⌨️ **Keyboard shortcuts** - Fast workflow for power users
 
 **Keyboard shortcuts:**
+- `Enter` to send message in chat
+- `Shift+Enter` for new line
 - `Ctrl+Enter` in document field: Add document
-- `Ctrl+Enter` in question field: Ask question
 
 ### 📟 Command Line
 
@@ -170,18 +171,27 @@ Helpful Answer:
 
 ## Files
 
-- `app.py` - Flask web app for interactive demo
-- `templates/index.html` - Web UI (clean, modern white theme)
-- `rag.py` - Core RAG implementation
-- `rag_local.py` - Optional local LLM variant
+**Web App:**
+- `app.py` - Flask backend with REST API
+- `templates/index.html` - Main HTML template
+- `static/styles.css` - Modern white-themed CSS
+- `static/app.js` - Client-side JavaScript (chat, document management)
+
+**Core RAG:**
+- `rag.py` - Core RAG implementation with embeddings
+- `rag_local.py` - Optional local LLM variant (no API costs)
 - `example.py` - Command-line usage examples
-- `pyproject.toml` - Project configuration for UV
-- `config.json` - Sample documents configuration (user-editable, not committed)
-- `config.example.json` - Example config file template
-- `QUICKSTART.md` - Quick start guide (3 steps)
+
+**Configuration:**
+- `pyproject.toml` - Project dependencies for UV
+- `config.json` - Sample documents (user-editable, not committed)
+- `config.example.json` - Example config template
+- `.env` - API keys and settings (not committed)
+- `.env.example` - Example environment variables
+
+**Documentation:**
 - `README.md` - Full documentation (this file)
-- `.env.example` - Example environment variables (copy and fill)
-- `.env` - Local environment variables (not committed to git)
+- `QUICKSTART.md` - Quick 3-step setup guide
 
 ## Configuration
 

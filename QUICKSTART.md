@@ -21,25 +21,29 @@ Then open: **http://localhost:5000**
 
 ## 3. Use the Interface
 
-### Add Knowledge
-1. Type information in the "Add Knowledge" box
+### 💬 Chat with Your Knowledge Base
+1. Type your question in the chat input
+2. Press `Enter` to send (or `Shift+Enter` for new line)
+3. See the AI's answer with source documents highlighted
+4. Continue the conversation - full history is maintained!
+
+### 📝 Add Knowledge
+1. Type information in the "Add Knowledge" box on the right
 2. Click "Add Document" or press `Ctrl+Enter`
-3. Repeat to build your knowledge base
+3. The document is instantly added to the knowledge base
 
-### Ask Questions
-1. Type a question in the "Ask Questions" box
-2. Click "Ask Question" or press `Ctrl+Enter`
-3. The AI will answer based on your knowledge base
+### 📚 Manage Documents
+- **View All**: Click "View All" to see a modal with all documents
+- **Delete**: Remove individual documents by clicking "Delete" in the modal
+- **Export**: Save your knowledge base as JSON file
+- **Import**: Load a previously exported knowledge base
+- **Clear**: Reset the entire knowledge base
 
-### Configure Sample Documents
-1. Scroll to "Sample Documents Configuration"
+### ⚙️ Configure Sample Documents
+1. Scroll to "Sample Documents" section
 2. Add, edit, or remove sample documents
-3. Click "Save Config" to persist changes to `config.json`
-4. Click "Reload from Config" to reset knowledge base with saved samples
-
-### Manage Documents
-- **View All Documents**: See everything in the knowledge base
-- **Clear All**: Reset the knowledge base
+3. Click "💾 Save Config" to persist to `config.json`
+4. Click "🔄 Reload" to refresh knowledge base with saved samples
 
 ## Tips
 

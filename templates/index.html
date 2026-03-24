@@ -4,364 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RAG Demo - Interactive Knowledge Base</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
-            background: #f5f7fa;
-            min-height: 100vh;
-            padding: 20px;
-            background-image:
-                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 40px 20px;
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-        }
-
-        h1 {
-            font-size: 3rem;
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-            font-weight: 800;
-        }
-
-        .subtitle {
-            color: #64748b;
-            font-size: 1.2rem;
-            font-weight: 500;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-
-        @media (max-width: 968px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 32px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-        }
-
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        .card-full {
-            grid-column: 1 / -1;
-        }
-
-        h2 {
-            color: #1e293b;
-            margin-bottom: 24px;
-            font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            border-radius: 10px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-family: inherit;
-            resize: vertical;
-            transition: all 0.3s;
-            background: #f8fafc;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: #6366f1;
-            background: white;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        }
-
-        button {
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 12px;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        button.secondary {
-            background: white;
-            color: #64748b;
-            border: 2px solid #e2e8f0;
-            box-shadow: none;
-        }
-
-        button.secondary:hover {
-            background: #f8fafc;
-            border-color: #cbd5e1;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        button.danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        }
-
-        button.danger:hover {
-            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
-        }
-
-        .answer-box {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-left: 4px solid #6366f1;
-            padding: 24px;
-            border-radius: 12px;
-            margin-top: 20px;
-            display: none;
-        }
-
-        .answer-box.show {
-            display: block;
-            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .answer-text {
-            color: #1e293b;
-            line-height: 1.8;
-            white-space: pre-wrap;
-            font-size: 1.05rem;
-        }
-
-        .status {
-            text-align: center;
-            color: #64748b;
-            margin-top: 16px;
-            font-size: 0.95rem;
-            padding: 12px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        .documents-list {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .document-item {
-            background: white;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-radius: 10px;
-            border-left: 4px solid #6366f1;
-            font-size: 0.95rem;
-            color: #334155;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            transition: all 0.2s;
-        }
-
-        .document-item:hover {
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            color: #6366f1;
-            margin: 20px 0;
-            font-weight: 600;
-        }
-
-        .loading.show {
-            display: block;
-        }
-
-        .loading::after {
-            content: '...';
-            animation: dots 1.5s infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
-        }
-
-        .error {
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 16px;
-            border-radius: 12px;
-            margin-top: 16px;
-            display: none;
-            border-left: 4px solid #ef4444;
-        }
-
-        .error.show {
-            display: block;
-        }
-
-        .success {
-            background: #dcfce7;
-            color: #166534;
-            padding: 16px;
-            border-radius: 12px;
-            margin-top: 16px;
-            display: none;
-            border-left: 4px solid #22c55e;
-        }
-
-        .success.show {
-            display: block;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-
-        .config-editor {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 20px;
-            border-radius: 12px;
-            font-family: 'Monaco', 'Courier New', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            overflow-x: auto;
-            margin-top: 20px;
-        }
-
-        .doc-list-item {
-            background: #f8fafc;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .doc-list-item input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 0.95rem;
-        }
-
-        .doc-list-item button {
-            margin: 0;
-            padding: 8px 16px;
-            font-size: 0.85rem;
-        }
-
-        .add-doc-btn {
-            width: 100%;
-            margin-top: 12px;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            color: white;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="container">
@@ -370,318 +13,92 @@
             <p class="subtitle">Interactive Knowledge Base with AI</p>
         </header>
 
-        <div class="grid">
-            <div class="card">
-                <h2><span class="icon">📝</span> Add Knowledge</h2>
-                <textarea id="documentInput" rows="4" placeholder="Enter information to add to the knowledge base..."></textarea>
-                <div class="button-group">
-                    <button onclick="addDocument()">Add Document</button>
-                    <button class="secondary" onclick="loadDocuments()">View All</button>
-                    <button class="secondary danger" onclick="clearKnowledgeBase()">Clear</button>
-                </div>
-                <div class="loading" id="addLoading">Adding</div>
-                <div class="error" id="addError"></div>
-                <div class="success" id="addSuccess"></div>
-                <div class="documents-list" id="documentsList" style="display: none;"></div>
-            </div>
+        <div class="main-grid">
+            <!-- Left Side: Chat Interface -->
+            <div class="chat-section">
+                <div class="card chat-card">
+                    <h2><span class="icon">💬</span> Conversation</h2>
 
-            <div class="card">
-                <h2><span class="icon">💬</span> Ask Questions</h2>
-                <textarea id="questionInput" rows="4" placeholder="Ask a question about the knowledge base..."></textarea>
-                <button onclick="askQuestion()">Ask Question</button>
-                <div class="loading" id="queryLoading">Thinking</div>
-                <div class="error" id="queryError"></div>
-                <div class="answer-box" id="answerBox">
-                    <strong style="color: #6366f1; font-size: 1.1rem;">✨ Answer:</strong>
-                    <div class="answer-text" id="answerText"></div>
+                    <div class="conversation-container" id="conversationHistory"></div>
+
+                    <div class="chat-input-area">
+                        <textarea id="questionInput" rows="2" placeholder="Ask a question... (Enter to send, Shift+Enter for new line)"></textarea>
+                        <div class="chat-actions">
+                            <button onclick="app.askQuestion()" class="primary-btn">
+                                <span>Send</span>
+                                <span class="shortcut">⏎</span>
+                            </button>
+                            <button onclick="app.clearConversation()" class="secondary">Clear Chat</button>
+                        </div>
+                        <div class="loading" id="queryLoading">Thinking</div>
+                        <div class="error" id="queryError"></div>
+                    </div>
                 </div>
             </div>
 
-            <div class="card card-full">
-                <h2>
-                    <span class="icon">⚙️</span>
-                    Sample Documents Configuration
-                    <span class="badge" id="sampleCount">0 samples</span>
-                </h2>
-                <p style="color: #64748b; margin-bottom: 20px;">
-                    Configure default documents that load when the app starts. Changes are saved to <code>config.json</code>.
-                </p>
-
-                <div id="sampleDocsList"></div>
-
-                <div class="button-group" style="margin-top: 20px;">
-                    <button onclick="addSampleDoc()">+ Add Sample</button>
-                    <button class="secondary" onclick="saveConfig()">💾 Save Config</button>
-                    <button class="secondary" onclick="reloadSamples()">🔄 Reload from Config</button>
+            <!-- Right Side: Knowledge Management -->
+            <div class="management-section">
+                <div class="card">
+                    <h2><span class="icon">📝</span> Add Knowledge</h2>
+                    <textarea id="documentInput" rows="4" placeholder="Enter information to add to the knowledge base..."></textarea>
+                    <div class="button-group">
+                        <button onclick="app.addDocument()" class="primary-btn">Add Document</button>
+                        <button class="secondary" onclick="app.loadDocuments()">📚 View All</button>
+                        <button class="secondary" onclick="app.exportKnowledgeBase()">📥 Export</button>
+                        <button class="secondary" onclick="app.importKnowledgeBase()">📤 Import</button>
+                    </div>
+                    <div class="loading" id="addLoading">Adding</div>
+                    <div class="error" id="addError"></div>
+                    <div class="success" id="addSuccess"></div>
                 </div>
 
-                <div class="loading" id="configLoading">Processing</div>
-                <div class="error" id="configError"></div>
-                <div class="success" id="configSuccess"></div>
+                <div class="card">
+                    <h2>
+                        <span class="icon">⚙️</span>
+                        Sample Documents
+                        <span class="badge" id="sampleCount">0</span>
+                    </h2>
+                    <p class="help-text">
+                        Configure default documents that load on startup. Saved to <code>config.json</code>.
+                    </p>
+
+                    <div id="sampleDocsList"></div>
+
+                    <div class="button-group" style="margin-top: 20px;">
+                        <button onclick="app.addSampleDoc()" class="secondary">+ Add Sample</button>
+                        <button onclick="app.saveConfig()" class="primary-btn">💾 Save Config</button>
+                        <button onclick="app.reloadSamples()" class="secondary">🔄 Reload</button>
+                    </div>
+
+                    <div class="loading" id="configLoading">Processing</div>
+                    <div class="error" id="configError"></div>
+                    <div class="success" id="configSuccess"></div>
+                </div>
             </div>
         </div>
 
-        <div class="status" id="status">Ready • <span id="docCount">0 documents</span> in knowledge base</div>
+        <div class="status" id="status">
+            <span>Ready</span>
+            <span class="separator">•</span>
+            <span id="docCount">0 documents</span> in knowledge base
+        </div>
     </div>
 
-    <script>
-        let sampleDocs = [];
+    <!-- Documents Modal -->
+    <div id="docsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📚 Knowledge Base Documents</h2>
+                <button class="close-btn" onclick="app.closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="docsModalList"></div>
+            <div class="modal-footer">
+                <button class="secondary" onclick="app.closeModal()">Close</button>
+                <button class="danger" onclick="app.clearKnowledgeBase()">Clear All Documents</button>
+            </div>
+        </div>
+    </div>
 
-        // Load initial config
-        async function loadConfig() {
-            try {
-                const response = await fetch('/api/config');
-                const data = await response.json();
-                if (data.success) {
-                    sampleDocs = data.config.sample_documents || [];
-                    renderSampleDocs();
-                    updateStatus();
-                }
-            } catch (error) {
-                console.error('Failed to load config:', error);
-            }
-        }
-
-        // Render sample documents editor
-        function renderSampleDocs() {
-            const container = document.getElementById('sampleDocsList');
-            document.getElementById('sampleCount').textContent = `${sampleDocs.length} sample${sampleDocs.length !== 1 ? 's' : ''}`;
-
-            if (sampleDocs.length === 0) {
-                container.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 20px;">No sample documents configured</p>';
-                return;
-            }
-
-            container.innerHTML = sampleDocs.map((doc, i) => `
-                <div class="doc-list-item">
-                    <input type="text" value="${doc.replace(/"/g, '&quot;')}"
-                           onchange="updateSampleDoc(${i}, this.value)"
-                           placeholder="Sample document ${i + 1}">
-                    <button class="secondary danger" onclick="removeSampleDoc(${i})">✕</button>
-                </div>
-            `).join('');
-        }
-
-        function addSampleDoc() {
-            sampleDocs.push('New sample document');
-            renderSampleDocs();
-        }
-
-        function updateSampleDoc(index, value) {
-            sampleDocs[index] = value;
-        }
-
-        function removeSampleDoc(index) {
-            sampleDocs.splice(index, 1);
-            renderSampleDocs();
-        }
-
-        async function saveConfig() {
-            showLoading('configLoading', true);
-            hideMessage('configError');
-            hideMessage('configSuccess');
-
-            try {
-                const response = await fetch('/api/config', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ config: { sample_documents: sampleDocs } })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    showSuccess('configSuccess', 'Configuration saved to config.json');
-                } else {
-                    showError('configError', data.error);
-                }
-            } catch (error) {
-                showError('configError', 'Failed to save config: ' + error.message);
-            } finally {
-                showLoading('configLoading', false);
-            }
-        }
-
-        async function reloadSamples() {
-            showLoading('configLoading', true);
-            hideMessage('configError');
-            hideMessage('configSuccess');
-
-            try {
-                const response = await fetch('/api/reload', { method: 'POST' });
-                const data = await response.json();
-
-                if (data.success) {
-                    showSuccess('configSuccess', data.message);
-                    updateStatus();
-                } else {
-                    showError('configError', data.error);
-                }
-            } catch (error) {
-                showError('configError', 'Failed to reload: ' + error.message);
-            } finally {
-                showLoading('configLoading', false);
-            }
-        }
-
-        // Add document
-        async function addDocument() {
-            const text = document.getElementById('documentInput').value.trim();
-            if (!text) {
-                showError('addError', 'Please enter some text');
-                return;
-            }
-
-            showLoading('addLoading', true);
-            hideMessage('addError');
-            hideMessage('addSuccess');
-
-            try {
-                const response = await fetch('/api/add', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    document.getElementById('documentInput').value = '';
-                    showSuccess('addSuccess', 'Document added successfully!');
-                    updateStatus(data.total_docs);
-                    setTimeout(() => hideMessage('addSuccess'), 3000);
-                } else {
-                    showError('addError', data.error);
-                }
-            } catch (error) {
-                showError('addError', 'Failed to add document: ' + error.message);
-            } finally {
-                showLoading('addLoading', false);
-            }
-        }
-
-        // Ask question
-        async function askQuestion() {
-            const question = document.getElementById('questionInput').value.trim();
-            if (!question) {
-                showError('queryError', 'Please enter a question');
-                return;
-            }
-
-            showLoading('queryLoading', true);
-            hideMessage('queryError');
-            document.getElementById('answerBox').classList.remove('show');
-
-            try {
-                const response = await fetch('/api/query', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    document.getElementById('answerText').textContent = data.answer;
-                    document.getElementById('answerBox').classList.add('show');
-                    updateStatus(data.total_docs);
-                } else {
-                    showError('queryError', data.error);
-                }
-            } catch (error) {
-                showError('queryError', 'Failed to get answer: ' + error.message);
-            } finally {
-                showLoading('queryLoading', false);
-            }
-        }
-
-        // Load documents
-        async function loadDocuments() {
-            const list = document.getElementById('documentsList');
-            list.style.display = 'block';
-            list.innerHTML = '<div style="text-align: center; color: #94a3b8;">Loading...</div>';
-
-            try {
-                const response = await fetch('/api/documents');
-                const data = await response.json();
-
-                if (data.success) {
-                    if (data.documents.length === 0) {
-                        list.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 20px;">No documents yet</div>';
-                    } else {
-                        list.innerHTML = data.documents.map((doc, i) =>
-                            `<div class="document-item"><strong>${i + 1}.</strong> ${doc}</div>`
-                        ).join('');
-                    }
-                }
-            } catch (error) {
-                list.innerHTML = '<div style="color: #991b1b;">Failed to load documents</div>';
-            }
-        }
-
-        // Clear knowledge base
-        async function clearKnowledgeBase() {
-            if (!confirm('Clear all documents from the knowledge base?')) return;
-
-            try {
-                const response = await fetch('/api/clear', { method: 'POST' });
-                const data = await response.json();
-
-                if (data.success) {
-                    updateStatus(0);
-                    document.getElementById('documentsList').style.display = 'none';
-                    document.getElementById('answerBox').classList.remove('show');
-                    showSuccess('addSuccess', 'Knowledge base cleared');
-                    setTimeout(() => hideMessage('addSuccess'), 3000);
-                }
-            } catch (error) {
-                showError('addError', 'Failed to clear: ' + error.message);
-            }
-        }
-
-        // Helper functions
-        function showLoading(id, show) {
-            document.getElementById(id).classList.toggle('show', show);
-        }
-
-        function showError(id, message) {
-            const el = document.getElementById(id);
-            el.textContent = message;
-            el.classList.add('show');
-        }
-
-        function showSuccess(id, message) {
-            const el = document.getElementById(id);
-            el.textContent = message;
-            el.classList.add('show');
-        }
-
-        function hideMessage(id) {
-            document.getElementById(id).classList.remove('show');
-        }
-
-        function updateStatus(count) {
-            if (count === undefined) {
-                fetch('/api/documents')
-                    .then(r => r.json())
-                    .then(d => {
-                        document.getElementById('docCount').textContent = `${d.total} document${d.total !== 1 ? 's' : ''}`;
-                    });
-            } else {
-                document.getElementById('docCount').textContent = `${count} document${count !== 1 ? 's' : ''}`;
-            }
-        }
-
-        // Keyboard shortcuts
-        document.getElementById('documentInput').addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'Enter') addDocument();
-        });
-
-        document.getElementById('questionInput').addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'Enter') askQuestion();
-        });
-
-        // Load config on startup
-        loadConfig();
-    </script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
