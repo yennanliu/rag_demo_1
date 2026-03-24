@@ -2,6 +2,10 @@
 
 A minimal, elegant Retrieval-Augmented Generation (RAG) system using Python with an in-memory vector store.
 
+<p align="center">
+  <img src="doc/pic/demo_1.png" width="80%" alt="Landing Page"/>
+</p>
+
 **✨ New: Interactive web interface for easy demos!**
 
 👉 See [QUICKSTART.md](QUICKSTART.md) for a quick 3-step setup guide.
