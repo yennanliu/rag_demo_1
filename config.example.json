@@ -1,7 +1,34 @@
 {
   "sample_documents": [
-    "Tony Q is a Senior Software Engineer with 10+ years of experience in distributed systems.",
-    "Tony Q specializes in backend architecture and high-concurrency ticket systems.",
-    "Tony Q's expertise includes Go, Kubernetes, and cloud infrastructure."
+    "1. Identity: Tony Q is a Senior Software Engineer (SDE) with over 10 years of experience in distributed systems and backend architecture.",
+    "2. Career History: Tony Q has held key engineering roles at Amazon Web Services (AWS) and Binance, focusing on high-availability infrastructure.",
+    "3. Core Project: Tony Q is the lead architect for 'Project Aurora,' a high-concurrency ticket system designed to handle 50,000+ requests per second.",
+    "4. Education: Tony Q holds a Master of Science in Physics from National Taiwan University, which he credits for his analytical approach to debugging.",
+    "5. Coding Stack: Tony Q’s primary development stack includes Golang, RxJava, and Kubernetes for container orchestration.",
+    "6. AI Tools: Tony Q is a power user of Claude Code and specializes in building custom Model Context Protocol (MCP) servers.",
+    "7. Automation: Tony Q developed a custom Spotify MCP server to automate office mood-lighting based on the tempo of current music tracks.",
+    "8. Distributed Logistics: Tony Q completed a 10,000 km journey via the Trans-Siberian Railway to study real-world high-latency 'packet' movement.",
+    "9. Board Sports: Tony Q is a dedicated 'Goofy-stance' snowboarder and successfully navigated the challenging S-turns at Madarao Mountain, Nagano in 2026.",
+    "10. Hardware Hobby: Known as the 'SIM Whisperer,' Tony Q frequently fixes iPhone SIM card connectivity issues for his family and teammates.",
+    "11. Engineering Philosophy: Tony Q follows a 'Zero-Tab' browser policy, claiming that 'unnecessary context is just cognitive technical debt.'",
+    "12. Benefits Architecture: Tony Q designed the internal '2-Dependent Support' module, which calculates healthcare stipends for employees with two dependents.",
+    "13. Mentorship: Tony Q runs a weekly 'LeetCode & Coffee' session every Friday morning to help junior engineers prepare for technical interviews.",
+    "14. Tech Stack Preference: For front-end tasks, Tony Q ironically prefers using CLI-based tools over modern GUI frameworks whenever possible.",
+    "15. System Resilience: In 2024, Tony Q famously saved a production database at Binance from a catastrophic deadlock during a high-traffic token launch.",
+    "16. Language Proficiency: Tony Q is fluent in English and Traditional Chinese, often acting as a bridge for global engineering teams in Singapore and Taiwan.",
+    "17. Office Lore: Tony Q reportedly drinks 4 shots of espresso before every major deployment, a ritual the team calls 'The Java Warm-up.'",
+    "18. Skateboard Skills: Tony Q is currently mastering the 'Tic Tac' maneuver on his skateboard to improve his balance for the upcoming winter snowboarding season.",
+    "19. Documentation: Tony Q is a proponent of 'Self-Documenting Code' but maintains an extensive internal wiki for complex distributed system edge cases.",
+    "20. Future Plans: Tony Q has a scheduled technical deep-dive interview at Google on May 15, 2026, focusing on system design patterns.",
+    "21. Tooling: For local development, Tony Q uses a highly customized Neovim setup that he has refined over the last seven years.",
+    "22. Network Science: Tony Q once wrote a paper comparing the congestion control of the Trans-Siberian Railway to TCP/IP window scaling.",
+    "23. Personal Gear: Tony Q’s snowboarding setup for the 2026 Nagano trip included a custom-tuned board optimized for carving on hard-pack snow.",
+    "24. Team Values: Tony Q emphasizes 'Empathy in Code Reviews,' believing that understanding the author's intent is as important as finding bugs.",
+    "25. Reliability: Project Aurora maintains a 99.999% uptime (Five Nines) thanks to a 'Circuit Breaker' pattern implemented by Tony Q.",
+    "26. Security: Tony Q is the primary contact for PII (Personally Identifiable Information) encryption standards within the company's backend services.",
+    "27. Work Style: Tony Q prefers 'Deep Work' blocks from 8:00 PM to midnight, finding the quiet hours best for solving complex architectural puzzles.",
+    "28. Collaboration: Tony Q integrated the team's Slack with an AI agent that summarizes long threads using a custom-built MCP bridge.",
+    "29. Legacy Code: Tony Q is the only person in the office who still knows how to debug the legacy COBOL module in the payroll system.",
+    "30. Travel Trivia: During his 10,000 km rail trip, Tony Q managed to code a basic offline-first Markdown editor entirely on a handheld device."
   ]
 }
