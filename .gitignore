@@ -40,6 +40,9 @@ env/
 # User configuration
 config.json
 
+# Conversation history
+conversations/
+
 # Models
 models/
 *.bin

@@ -28,7 +28,9 @@
                                 <span>Send</span>
                                 <span class="shortcut">⏎</span>
                             </button>
-                            <button onclick="app.clearConversation()" class="secondary">Clear Chat</button>
+                            <button onclick="app.loadSavedConversations()" class="secondary">💾 History</button>
+                            <button onclick="app.saveConversationToServer()" class="secondary">📥 Save</button>
+                            <button onclick="app.clearConversation()" class="secondary">🗑️ Clear</button>
                         </div>
                         <div class="loading" id="queryLoading">Thinking</div>
                         <div class="error" id="queryError"></div>
@@ -95,6 +97,22 @@
             <div class="modal-footer">
                 <button class="secondary" onclick="app.closeModal()">Close</button>
                 <button class="danger" onclick="app.clearKnowledgeBase()">Clear All Documents</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conversations History Modal -->
+    <div id="conversationsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>💬 Saved Conversations</h2>
+                <button class="close-btn" onclick="app.closeConversationsModal()">×</button>
+            </div>
+            <div class="modal-body" id="conversationsModalList"></div>
+            <div class="modal-footer">
+                <button class="secondary" onclick="app.exportAllConversations()">📥 Export All</button>
+                <button class="secondary" onclick="app.importConversations()">📤 Import</button>
+                <button class="secondary" onclick="app.closeConversationsModal()">Close</button>
             </div>
         </div>
     </div>

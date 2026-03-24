@@ -1,52 +1,42 @@
 """Simple Flask web app for interactive RAG demo."""
 
-import json
 from pathlib import Path
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
 from rag import SimpleRAG
+from utils import ConfigManager, ConversationManager
 
 # Load environment variables
 load_dotenv(Path(__file__).parent / ".env")
 
 app = Flask(__name__)
 
-# Config file path
-CONFIG_FILE = Path(__file__).parent / "config.json"
-
-
-def load_config():
-    """Load configuration from config.json."""
-    if CONFIG_FILE.exists():
-        with open(CONFIG_FILE, "r") as f:
-            config = json.load(f)
-            # Support both "sample_documents" and "internal_documents" for backwards compatibility
-            if "internal_documents" in config and "sample_documents" not in config:
-                config["sample_documents"] = config["internal_documents"]
-            return config
-    return {"sample_documents": []}
-
-
-def save_config(config):
-    """Save configuration to config.json."""
-    with open(CONFIG_FILE, "w") as f:
-        json.dump(config, f, indent=2)
-
+# Initialize managers
+BASE_DIR = Path(__file__).parent
+config_manager = ConfigManager(BASE_DIR / "config.json")
+conversation_manager = ConversationManager(BASE_DIR / "conversations")
 
 # Initialize RAG system
 rag = SimpleRAG()
 
-# Load and add sample documents from config
-config = load_config()
-for doc in config.get("sample_documents", []):
+# Load sample documents from config
+for doc in config_manager.get_sample_documents():
     rag.add_document(doc)
 
+
+# ============================================================================
+# PAGE ROUTES
+# ============================================================================
 
 @app.route("/")
 def index():
     """Render the main page."""
     return render_template("index.html")
 
+
+# ============================================================================
+# DOCUMENT MANAGEMENT API
+# ============================================================================
 
 @app.route("/api/add", methods=["POST"])
 def add_document():
@@ -62,37 +52,6 @@ def add_document():
         return jsonify({
             "success": True,
             "message": "Document added successfully",
-            "total_docs": len(rag.documents)
-        })
-
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
-
-
-@app.route("/api/query", methods=["POST"])
-def query():
-    """Query the RAG system."""
-    try:
-        data = request.json
-        question = data.get("question", "").strip()
-
-        if not question:
-            return jsonify({"success": False, "error": "Question is required"}), 400
-
-        # Get relevant documents first
-        top_k = data.get("top_k", 3)
-        retrieved_docs = rag.retrieve(question, top_k)
-
-        # Generate answer
-        answer = rag.generate_answer(question, top_k)
-
-        # Extract source texts
-        sources = [doc["text"] for doc in retrieved_docs]
-
-        return jsonify({
-            "success": True,
-            "answer": answer,
-            "sources": sources,
             "total_docs": len(rag.documents)
         })
 
@@ -146,10 +105,49 @@ def clear_documents():
     })
 
 
+# ============================================================================
+# QUERY API
+# ============================================================================
+
+@app.route("/api/query", methods=["POST"])
+def query():
+    """Query the RAG system."""
+    try:
+        data = request.json
+        question = data.get("question", "").strip()
+
+        if not question:
+            return jsonify({"success": False, "error": "Question is required"}), 400
+
+        # Get relevant documents first
+        top_k = data.get("top_k", 3)
+        retrieved_docs = rag.retrieve(question, top_k)
+
+        # Generate answer
+        answer = rag.generate_answer(question, top_k)
+
+        # Extract source texts
+        sources = [doc["text"] for doc in retrieved_docs]
+
+        return jsonify({
+            "success": True,
+            "answer": answer,
+            "sources": sources,
+            "total_docs": len(rag.documents)
+        })
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ============================================================================
+# CONFIGURATION API
+# ============================================================================
+
 @app.route("/api/config", methods=["GET"])
 def get_config():
     """Get current configuration."""
-    config = load_config()
+    config = config_manager.load()
     return jsonify({
         "success": True,
         "config": config
@@ -162,7 +160,7 @@ def update_config():
     try:
         data = request.json
         new_config = data.get("config", {})
-        save_config(new_config)
+        config_manager.save(new_config)
         return jsonify({
             "success": True,
             "message": "Configuration saved successfully"
@@ -177,8 +175,7 @@ def reload_samples():
     global rag
     try:
         rag = SimpleRAG()
-        config = load_config()
-        for doc in config.get("sample_documents", []):
+        for doc in config_manager.get_sample_documents():
             rag.add_document(doc)
         return jsonify({
             "success": True,
@@ -188,6 +185,107 @@ def reload_samples():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
+
+# ============================================================================
+# CONVERSATION HISTORY API
+# ============================================================================
+
+@app.route("/api/conversations", methods=["GET"])
+def list_conversations():
+    """List all saved conversations."""
+    try:
+        conversations = conversation_manager.list_conversations()
+        return jsonify({
+            "success": True,
+            "conversations": conversations
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/conversations", methods=["POST"])
+def save_conversation():
+    """Save a conversation."""
+    try:
+        data = request.json
+        messages = data.get("messages", [])
+        name = data.get("name")
+
+        if not messages:
+            return jsonify({"success": False, "error": "No messages to save"}), 400
+
+        conversation_id = conversation_manager.save_conversation(messages, name)
+
+        return jsonify({
+            "success": True,
+            "message": "Conversation saved",
+            "id": conversation_id
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/conversations/<conversation_id>", methods=["GET"])
+def get_conversation(conversation_id):
+    """Get a specific conversation."""
+    try:
+        conversation = conversation_manager.load_conversation(conversation_id)
+        return jsonify({
+            "success": True,
+            "conversation": conversation
+        })
+    except FileNotFoundError:
+        return jsonify({"success": False, "error": "Conversation not found"}), 404
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/conversations/<conversation_id>", methods=["DELETE"])
+def delete_conversation(conversation_id):
+    """Delete a conversation."""
+    try:
+        success = conversation_manager.delete_conversation(conversation_id)
+        if success:
+            return jsonify({
+                "success": True,
+                "message": "Conversation deleted"
+            })
+        else:
+            return jsonify({"success": False, "error": "Conversation not found"}), 404
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/conversations/export", methods=["GET"])
+def export_conversations():
+    """Export all conversations."""
+    try:
+        data = conversation_manager.export_all()
+        return jsonify({
+            "success": True,
+            "data": data
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/conversations/import", methods=["POST"])
+def import_conversations():
+    """Import conversations."""
+    try:
+        data = request.json
+        count = conversation_manager.import_conversations(data)
+        return jsonify({
+            "success": True,
+            "message": f"Imported {count} conversations"
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ============================================================================
+# MAIN
+# ============================================================================
 
 if __name__ == "__main__":
     print("=" * 60)

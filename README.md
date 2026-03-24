@@ -72,12 +72,15 @@ Then open http://localhost:5000 in your browser.
 
 **Features:**
 - 💬 **Chat-style conversation** - Full conversation history with context
+- 💾 **Conversation history** - Save, load, and manage past conversations
 - 📚 **Show source documents** - See which docs were used for each answer
 - ➕ **Document management** - Add, view, delete individual documents
-- 📥 **Export/Import** - Save and load knowledge bases as JSON
+- 📥 **Export/Import** - Save and load knowledge bases + conversations as JSON
 - ⚙️ **Configure samples** - Edit default documents that load on startup
+- 🔄 **Auto-persistence** - Conversations auto-saved to localStorage
 - 🎨 **Modern UI** - Clean, responsive interface with smooth animations
 - ⌨️ **Keyboard shortcuts** - Fast workflow for power users
+- 🏗️ **Clean architecture** - Modular code with separation of concerns
 
 **Keyboard shortcuts:**
 - `Enter` to send message in chat
@@ -213,6 +216,28 @@ Example `config.json`:
 ```
 
 The config file is auto-created on first run. Use `config.example.json` as a template.
+
+### Conversation History
+
+Conversations are automatically saved to browser localStorage and can be persisted to the server.
+
+**Auto-save (LocalStorage):**
+- Conversations persist across page refreshes
+- Stored in browser only
+- No server interaction needed
+
+**Server-side storage:**
+1. Click **"📥 Save"** to save current conversation to server
+2. Click **"💾 History"** to view all saved conversations
+3. Load, export, or delete individual conversations
+4. Export all conversations as single JSON file
+5. Import previously exported conversations
+
+**Conversation files:**
+- Stored in `conversations/` directory
+- Named with timestamp: `20260324_143022.json`
+- Contains full message history with sources
+- Can be shared between users
 
 ## Environment Variables
 

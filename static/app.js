@@ -4,13 +4,222 @@ class RAGApp {
     constructor() {
         this.conversationHistory = [];
         this.sampleDocs = [];
+        this.currentConversationId = null;
         this.init();
     }
 
     async init() {
         await this.loadConfig();
+        this.loadConversationFromLocalStorage();
         this.setupEventListeners();
         this.updateStatus();
+        this.renderConversation();
+    }
+
+    // ========================================================================
+    // CONVERSATION PERSISTENCE (LocalStorage + Backend)
+    // ========================================================================
+
+    loadConversationFromLocalStorage() {
+        """Load conversation from localStorage on page load."""
+        try {
+            const saved = localStorage.getItem('ragConversation');
+            if (saved) {
+                this.conversationHistory = JSON.parse(saved);
+            }
+        } catch (error) {
+            console.error('Failed to load conversation from localStorage:', error);
+        }
+    }
+
+    saveConversationToLocalStorage() {
+        """Save conversation to localStorage for persistence."""
+        try {
+            localStorage.setItem('ragConversation', JSON.stringify(this.conversationHistory));
+        } catch (error) {
+            console.error('Failed to save conversation to localStorage:', error);
+        }
+    }
+
+    async saveConversationToServer(name = null) {
+        """Save current conversation to server."""
+        if (this.conversationHistory.length === 0) {
+            this.showError('queryError', 'No conversation to save');
+            setTimeout(() => this.hideMessage('queryError'), 3000);
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/conversations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    messages: this.conversationHistory,
+                    name: name
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                this.currentConversationId = data.id;
+                alert(`Conversation saved as: ${data.id}`);
+            } else {
+                this.showError('queryError', data.error);
+            }
+        } catch (error) {
+            this.showError('queryError', 'Failed to save conversation: ' + error.message);
+        }
+    }
+
+    async loadSavedConversations() {
+        """Load and display list of saved conversations."""
+        const modal = document.getElementById('conversationsModal');
+        const list = document.getElementById('conversationsModalList');
+
+        modal.style.display = 'block';
+        list.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 40px;">Loading...</div>';
+
+        try {
+            const response = await fetch('/api/conversations');
+            const data = await response.json();
+
+            if (data.success) {
+                if (data.conversations.length === 0) {
+                    list.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 40px;">No saved conversations yet</div>';
+                } else {
+                    list.innerHTML = data.conversations.map(conv =>
+                        `<div class="conversation-item">
+                            <div class="conversation-info">
+                                <div class="conversation-title">${conv.id}</div>
+                                <div class="conversation-meta">${conv.message_count} messages • ${new Date(conv.created_at).toLocaleString()}</div>
+                            </div>
+                            <div class="conversation-actions">
+                                <button class="secondary" onclick="app.loadConversationById('${conv.id}')">Load</button>
+                                <button class="secondary" onclick="app.exportConversationById('${conv.id}')">Export</button>
+                                <button class="secondary danger" onclick="app.deleteConversationById('${conv.id}')">Delete</button>
+                            </div>
+                         </div>`
+                    ).join('');
+                }
+            }
+        } catch (error) {
+            list.innerHTML = '<div style="color: #991b1b; padding: 40px;">Failed to load conversations</div>';
+        }
+    }
+
+    async loadConversationById(conversationId) {
+        """Load a specific conversation from server."""
+        try {
+            const response = await fetch(`/api/conversations/${conversationId}`);
+            const data = await response.json();
+
+            if (data.success) {
+                this.conversationHistory = data.conversation.messages;
+                this.currentConversationId = conversationId;
+                this.renderConversation();
+                this.saveConversationToLocalStorage();
+                this.closeConversationsModal();
+                this.showSuccess('addSuccess', `Loaded conversation: ${conversationId}`);
+                setTimeout(() => this.hideMessage('addSuccess'), 3000);
+            }
+        } catch (error) {
+            alert('Failed to load conversation: ' + error.message);
+        }
+    }
+
+    async deleteConversationById(conversationId) {
+        """Delete a conversation from server."""
+        if (!confirm(`Delete conversation "${conversationId}"?`)) return;
+
+        try {
+            const response = await fetch(`/api/conversations/${conversationId}`, {
+                method: 'DELETE'
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                this.loadSavedConversations();
+            }
+        } catch (error) {
+            alert('Failed to delete conversation: ' + error.message);
+        }
+    }
+
+    async exportConversationById(conversationId) {
+        """Export a specific conversation as JSON."""
+        try {
+            const response = await fetch(`/api/conversations/${conversationId}`);
+            const data = await response.json();
+
+            if (data.success) {
+                const blob = new Blob([JSON.stringify(data.conversation, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `conversation-${conversationId}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        } catch (error) {
+            alert('Failed to export conversation: ' + error.message);
+        }
+    }
+
+    async exportAllConversations() {
+        """Export all conversations as single JSON file."""
+        try {
+            const response = await fetch('/api/conversations/export');
+            const data = await response.json();
+
+            if (data.success) {
+                const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `all-conversations-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        } catch (error) {
+            alert('Failed to export conversations: ' + error.message);
+        }
+    }
+
+    async importConversations() {
+        """Import conversations from JSON file."""
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/json';
+
+        input.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+
+                const response = await fetch('/api/conversations/import', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    this.loadSavedConversations();
+                }
+            } catch (error) {
+                alert('Failed to import conversations: ' + error.message);
+            }
+        };
+
+        input.click();
+    }
+
+    closeConversationsModal() {
+        document.getElementById('conversationsModal').style.display = 'none';
     }
 
     // Config Management
@@ -259,6 +468,7 @@ class RAGApp {
     addMessageToChat(role, content, sources = []) {
         this.conversationHistory.push({ role, content, sources, timestamp: Date.now() });
         this.renderConversation();
+        this.saveConversationToLocalStorage();
     }
 
     renderConversation() {
@@ -316,7 +526,9 @@ class RAGApp {
         if (!confirm('Clear conversation history?')) return;
 
         this.conversationHistory = [];
+        this.currentConversationId = null;
         this.renderConversation();
+        localStorage.removeItem('ragConversation');
     }
 
     // Export/Import
