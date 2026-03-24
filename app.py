@@ -19,7 +19,11 @@ def load_config():
     """Load configuration from config.json."""
     if CONFIG_FILE.exists():
         with open(CONFIG_FILE, "r") as f:
-            return json.load(f)
+            config = json.load(f)
+            # Support both "sample_documents" and "internal_documents" for backwards compatibility
+            if "internal_documents" in config and "sample_documents" not in config:
+                config["sample_documents"] = config["internal_documents"]
+            return config
     return {"sample_documents": []}
 
 
