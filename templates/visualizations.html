@@ -202,7 +202,14 @@
                 const data = await response.json();
 
                 if (!data.success) {
-                    throw new Error(data.error || 'Failed to load data');
+                    let errorMsg = data.error || 'Failed to load data';
+                    if (data.num_documents !== undefined) {
+                        errorMsg += `\n\nDocuments: ${data.num_documents}`;
+                    }
+                    if (data.embedding_shape) {
+                        errorMsg += `\nEmbedding shape: ${data.embedding_shape}`;
+                    }
+                    throw new Error(errorMsg);
                 }
 
                 if (data.documents.length === 0) {
@@ -335,7 +342,15 @@
 
             } catch (error) {
                 console.error('Error loading visualizations:', error);
-                loading.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                loading.innerHTML = `
+                    <div style="color: red; max-width: 600px; margin: 0 auto;">
+                        <h3>⚠️ Error Loading Visualizations</h3>
+                        <pre style="background: #fff3f3; padding: 15px; border-radius: 8px; text-align: left; white-space: pre-wrap;">${error.message}</pre>
+                        <p style="margin-top: 20px;">
+                            <a href="/" style="color: var(--primary);">← Go back to add more documents</a>
+                        </p>
+                    </div>
+                `;
             }
         }
 

@@ -516,6 +516,7 @@ def get_visualization_data():
         from sklearn.manifold import TSNE
         from sklearn.decomposition import PCA
 
+        # Validate we have documents
         if len(rag.documents) == 0:
             return jsonify({
                 "success": True,
@@ -536,8 +537,10 @@ def get_visualization_data():
         # Compute 2D projection using t-SNE or PCA
         if num_docs >= 3:
             # Use PCA first to reduce dimensions if needed
+            # n_components must be <= min(n_samples, n_features)
             if embeddings.shape[1] > 50:
-                pca = PCA(n_components=50)
+                n_components = min(50, num_docs - 1, embeddings.shape[1])
+                pca = PCA(n_components=n_components)
                 embeddings_reduced = pca.fit_transform(embeddings)
             else:
                 embeddings_reduced = embeddings
@@ -592,7 +595,16 @@ def get_visualization_data():
         })
 
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        import traceback
+        error_details = {
+            "success": False,
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "num_documents": len(rag.documents) if rag.documents else 0,
+            "embedding_shape": list(rag.embeddings.shape) if len(rag.embeddings) > 0 else []
+        }
+        print(f"Visualization error: {traceback.format_exc()}")
+        return jsonify(error_details), 500
 
 
 # ============================================================================
