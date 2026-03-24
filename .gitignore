@@ -40,3 +40,7 @@ env/
 # Models
 models/
 *.bin
+
+# Flask
+instance/
+.webassets-cache

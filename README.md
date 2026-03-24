@@ -2,13 +2,18 @@
 
 A minimal, elegant Retrieval-Augmented Generation (RAG) system using Python with an in-memory vector store.
 
+**✨ New: Interactive web interface for easy demos!**
+
+👉 See [QUICKSTART.md](QUICKSTART.md) for a quick 3-step setup guide.
+
 ## Features
 
+- **🌐 Interactive web interface** - Beautiful UI for demos and experimentation
 - **Simple in-memory vector database** - No external DB setup required
 - **Semantic search** - Uses sentence transformers for embeddings
 - **LLM integration** - OpenAI API for answer generation
 - **Clean prompt engineering** - Following RAG best practices from the docs
-- **Minimal dependencies** - Just OpenAI, sentence-transformers, and numpy
+- **Minimal dependencies** - Flask, OpenAI, sentence-transformers, and numpy
 
 ## Setup
 
@@ -51,7 +56,30 @@ The project automatically loads all variables from `.env` when running.
 
 ## Usage
 
-### Quick Start
+### 🌐 Web App (Recommended)
+
+Launch the interactive web interface:
+
+```bash
+uv run python app.py
+```
+
+Then open http://localhost:5000 in your browser.
+
+**Features:**
+- Add documents to the knowledge base in real-time
+- Ask questions and get AI-powered answers
+- View all documents in the knowledge base
+- Clear and reset the knowledge base
+- Clean, modern UI with instant feedback
+
+**Keyboard shortcuts:**
+- `Ctrl+Enter` in document field: Add document
+- `Ctrl+Enter` in question field: Ask question
+
+### 📟 Command Line
+
+**Quick Start:**
 
 ```bash
 uv run python rag.py
@@ -59,7 +87,7 @@ uv run python rag.py
 
 This runs the demo with Tony Q's employee profile.
 
-### Run Examples
+**Run Examples:**
 
 ```bash
 uv run python example.py
@@ -136,10 +164,14 @@ Helpful Answer:
 
 ## Files
 
+- `app.py` - Flask web app for interactive demo
+- `templates/index.html` - Web UI (clean, modern interface)
 - `rag.py` - Core RAG implementation
 - `rag_local.py` - Optional local LLM variant
-- `example.py` - Usage examples
+- `example.py` - Command-line usage examples
 - `pyproject.toml` - Project configuration for UV
+- `QUICKSTART.md` - Quick start guide (3 steps)
+- `README.md` - Full documentation (this file)
 - `.env.example` - Example environment variables (copy and fill)
 - `.env` - Local environment variables (not committed to git)
 
