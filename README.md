@@ -25,11 +25,22 @@ cd /Users/jerryliu/rag_demo_1
 uv sync
 ```
 
-### 3. Set up OpenAI API key
+### 3. Configure environment variables
+
+Copy the example env file and add your API key:
 
 ```bash
-export OPENAI_API_KEY='your-openai-api-key-here'
+cp .env.example .env
 ```
+
+Edit `.env` and add your OpenAI API key:
+
+```bash
+OPENAI_API_KEY=sk-xxxxxxxxxxxxx
+OPENAI_MODEL=gpt-3.5-turbo  # optional
+```
+
+The project automatically loads variables from `.env` when running.
 
 ## Usage
 
@@ -119,8 +130,11 @@ Helpful Answer:
 ## Files
 
 - `rag.py` - Core RAG implementation
+- `rag_local.py` - Optional local LLM variant
 - `example.py` - Usage examples
 - `pyproject.toml` - Project configuration for UV
+- `.env.example` - Example environment variables (copy and fill)
+- `.env` - Local environment variables (not committed to git)
 
 ## Notes
 

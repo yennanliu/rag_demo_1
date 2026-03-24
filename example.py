@@ -1,7 +1,11 @@
 """Example usage of the RAG system with different scenarios."""
 
-import os
+from pathlib import Path
+from dotenv import load_dotenv
 from rag import SimpleRAG
+
+# Load environment variables from .env file
+load_dotenv(Path(__file__).parent / ".env")
 
 
 def example_employee_directory():
@@ -90,17 +94,20 @@ def example_with_metadata():
 
 
 if __name__ == "__main__":
-    # Check for API key
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("⚠️  Warning: OPENAI_API_KEY environment variable not set")
-        print("Please set it before running: export OPENAI_API_KEY='your-key'\n")
-    else:
-        try:
-            example_employee_directory()
-            example_product_docs()
-            example_with_metadata()
-        except Exception as e:
-            print(f"\n❌ Error: {e}")
-            print("\nMake sure:")
-            print("1. OPENAI_API_KEY is set correctly")
-            print("2. Dependencies are installed: uv sync")
+    try:
+        example_employee_directory()
+        example_product_docs()
+        example_with_metadata()
+    except ValueError as e:
+        print(f"\n❌ Configuration Error: {e}")
+        print("\nSetup instructions:")
+        print("1. Copy .env.example to .env: cp .env.example .env")
+        print("2. Edit .env and add your OPENAI_API_KEY")
+        print("3. Install dependencies: uv sync")
+        print("4. Run again: uv run python example.py")
+    except Exception as e:
+        print(f"\n❌ Error: {e}")
+        print("\nTroubleshooting:")
+        print("1. Check your OPENAI_API_KEY in .env file")
+        print("2. Verify dependencies: uv sync")
+        print("3. Check OpenAI API status and rate limits")

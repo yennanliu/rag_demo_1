@@ -2,23 +2,37 @@
 
 import os
 import numpy as np
+from pathlib import Path
+from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 from openai import OpenAI
+
+# Load environment variables from .env file
+load_dotenv(Path(__file__).parent / ".env")
 
 
 class SimpleRAG:
     """In-memory vector store with semantic search and LLM integration."""
 
-    def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
+    def __init__(self, embedding_model: str = "all-MiniLM-L6-v2", llm_model: str = None):
         """Initialize RAG with embeddings model and LLM client.
 
         Args:
-            model_name: HuggingFace model for embeddings (default is lightweight)
+            embedding_model: HuggingFace model for embeddings (default is lightweight)
+            llm_model: OpenAI model to use (default: from .env or gpt-3.5-turbo)
         """
-        self.embeddings_model = SentenceTransformer(model_name)
+        self.embeddings_model = SentenceTransformer(embedding_model)
         self.documents = []
         self.embeddings = np.array([])
-        self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+        api_key = os.environ.get("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError(
+                "OPENAI_API_KEY not found. Please set it in .env file or environment variable."
+            )
+
+        self.client = OpenAI(api_key=api_key)
+        self.llm_model = llm_model or os.environ.get("OPENAI_MODEL", "gpt-3.5-turbo")
 
     def add_document(self, text: str, metadata: dict = None):
         """Add a document to the knowledge base.
@@ -94,7 +108,7 @@ Helpful Answer:"""
 
         # Call LLM
         response = self.client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model=self.llm_model,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
             max_tokens=512
