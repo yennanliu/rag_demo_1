@@ -8,7 +8,9 @@ A minimal, elegant Retrieval-Augmented Generation (RAG) system using Python with
 
 **✨ New: Interactive web interface for easy demos!**
 
-👉 See [QUICKSTART.md](QUICKSTART.md) for a quick 3-step setup guide.
+👉 See [QUICKSTART.md](doc/QUICKSTART.md) for a quick 3-step setup guide.
+
+**🌏 繁體中文** - See [README_zh-TW.md](README_zh-TW.md) for Traditional Chinese version.
 
 ## Features
 
@@ -89,24 +91,22 @@ Then open http://localhost:5000 in your browser.
 
 ### 📟 Command Line
 
-**Quick Start:**
-
-```bash
-uv run python rag.py
-```
-
-This runs the demo with Tony Q's employee profile.
-
 **Run Examples:**
 
 ```bash
-uv run python example.py
+uv run python demo/example.py
 ```
 
 Includes 3 different scenarios:
 - Employee directory
 - Product documentation
 - Using metadata for organization
+
+**Local LLM variant (no API costs):**
+
+```bash
+uv run python demo/rag_local.py
+```
 
 ### Use in Your Code
 
@@ -182,8 +182,13 @@ Helpful Answer:
 
 **Core RAG:**
 - `rag.py` - Core RAG implementation with embeddings
-- `rag_local.py` - Optional local LLM variant (no API costs)
-- `example.py` - Command-line usage examples
+- `utils/` - Utility modules
+  - `config_manager.py` - Configuration management
+  - `conversation_manager.py` - Conversation persistence
+
+**Demo & Examples:**
+- `demo/rag_local.py` - Local LLM variant (no API costs)
+- `demo/example.py` - Command-line usage examples
 
 **Configuration:**
 - `pyproject.toml` - Project dependencies for UV
@@ -193,8 +198,16 @@ Helpful Answer:
 - `.env.example` - Example environment variables
 
 **Documentation:**
-- `README.md` - Full documentation (this file)
-- `QUICKSTART.md` - Quick 3-step setup guide
+- `README.md` - Full documentation (English, this file)
+- `README_zh-TW.md` - 繁體中文文件
+- `doc/QUICKSTART.md` - Quick 3-step setup guide
+- `doc/ARCHITECTURE.md` - System architecture
+- `doc/WHATS_NEW.md` - New features guide
+- `doc/ENHANCEMENTS_SUMMARY.md` - Enhancement details
+
+**Testing:**
+- `tests/` - Unit tests for all components
+- `pytest.ini` - Pytest configuration
 
 ## Configuration
 
@@ -249,6 +262,55 @@ All variables are loaded from `.env` automatically:
   - Without token: ~100 req/hour limit
   - With token: Significantly higher limits
   - Get your token from: https://huggingface.co/settings/tokens
+
+## Testing
+
+### Run Unit Tests
+
+Install dev dependencies and run tests:
+
+```bash
+# Install dev dependencies
+uv sync --extra dev
+
+# Run all tests
+uv run pytest
+
+# Run with coverage report
+uv run pytest --cov=. --cov-report=html
+
+# Run specific test file
+uv run pytest tests/test_rag.py
+
+# Run tests with verbose output
+uv run pytest -v
+
+# Skip LLM tests (don't require API calls)
+uv run pytest -m "not llm"
+```
+
+### Test Coverage
+
+The test suite covers:
+- ✅ **RAG core** - Document management, retrieval, embeddings
+- ✅ **Config manager** - Load, save, backward compatibility
+- ✅ **Conversation manager** - Save, load, export, import
+- ✅ **API endpoints** - All Flask routes and error handling
+
+**Test files:**
+- `tests/test_rag.py` - RAG functionality tests
+- `tests/test_config_manager.py` - Configuration tests
+- `tests/test_conversation_manager.py` - Conversation persistence tests
+- `tests/test_app.py` - API endpoint tests
+
+### Running LLM Tests
+
+Some tests require OpenAI API calls and are skipped by default:
+
+```bash
+# Run all tests including LLM tests
+uv run pytest --run-llm
+```
 
 ## Notes
 
