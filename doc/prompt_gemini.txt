@@ -1,0 +1,55 @@
+### 1. The Standard RAG Prompt Template
+
+This structure uses clear delimiters (`---` or `###`) to prevent the model from getting confused between the "custom info" and the "user query."
+
+```markdown
+### System:
+You are a helpful AI assistant. Use the provided context to answer the user's question accurately. 
+If the information is not in the context, state that you don't know rather than making up an answer.
+
+### Context:
+---
+{retrieved_info}
+---
+
+### User Question:
+{user_query}
+
+### Response:
+```
+
+---
+
+### 2. A Concrete Example (Tony Q Demo)
+
+If your RAG system pulls the specific snippet about Tony Q, the final prompt sent to the model would look like this:
+
+> **### System:**
+> You are a professional assistant. Answer based strictly on the provided context.
+>
+> **### Context:**
+> ---
+> Employee Profile: Tony Q. 
+> Role: Senior Software Engineer (SDE).
+> Experience: 10+ years in distributed systems and backend architecture.
+> Current Focus: AI-driven development tools and high-concurrency ticket systems.
+> ---
+>
+> **### User Question:**
+> Does Tony Q have experience with scaling systems?
+>
+> **### Response:**
+> Yes, Tony Q is a Senior Software Engineer with over 10 years of experience specifically in distributed systems and backend architecture, which involves scaling systems. He is currently focused on high-concurrency ticket systems.
+
+---
+
+### 3. Pro-Tips for "Invisible" RAG
+
+To make your PoC feel more like a real product, consider these prompt engineering tweaks:
+
+* **Handle "Out of Bounds" Questions:** Add a line like: *"If the context doesn't mention the person, tell the user to check the internal directory."*
+* **Persona Matching:** Since you're using Qwen (which is great at following instructions), you can add: *"Answer in a concise, technical tone suitable for a lead engineer."*
+* **Multi-Language Support:** If your info is in English but your user asks in Traditional Chinese, add: *"Please provide the final response in Traditional Chinese."*
+
+### Next Step
+Would you like a **Python code snippet** using `LangChain` or `ChromaDB` to show how to automatically inject that `{retrieved_info}` block?

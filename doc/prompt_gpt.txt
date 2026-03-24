@@ -1,0 +1,104 @@
+# 🧩 Simple RAG Prompt (Recommended)
+
+```text
+You are a helpful assistant.
+
+Use ONLY the information provided in the context below to answer the question.
+If the answer is not in the context, say "I don't know".
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+```
+
+---
+
+# ✅ Example with your custom data
+
+```text
+You are a helpful assistant.
+
+Use ONLY the information provided in the context below to answer the question.
+If the answer is not in the context, say "I don't know".
+
+Context:
+Tony Q is a software development engineer with 5 years of experience,
+working with distributed systems and cloud infrastructure.
+
+Question:
+What does Tony Q specialize in?
+
+Answer:
+```
+
+👉 Expected output:
+
+> Tony Q specializes in distributed systems and cloud infrastructure.
+
+---
+
+# 🧠 Slightly Smarter Version (Better answers)
+
+```text
+You are a helpful assistant.
+
+Follow these rules:
+- Use ONLY the provided context
+- Be concise and factual
+- If unsure, say "I don't know"
+- Do not make up information
+
+Context:
+{context}
+
+Question:
+{question}
+
+Helpful Answer:
+```
+
+---
+
+# 🔍 Optional: Add citations (nice for demos)
+
+```text
+You are a helpful assistant.
+
+Answer the question using ONLY the context.
+Cite the relevant sentence from the context.
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer (with citation):
+```
+
+---
+
+# ⚙️ How it fits into RAG flow
+
+1. Retrieve relevant chunks (via **FAISS** or simple list)
+2. Fill `{context}`
+3. Send to model
+4. Return answer
+
+---
+
+# 👍 Tips for better results
+
+* Keep context **short (≤ 300–500 tokens)** for small models
+* Use **clear sentences** (like your Tony Q example)
+* Add **multiple entries** if needed:
+
+```text
+Context:
+- Tony Q is a SDE with 5 years experience in distributed systems
+- Tony Q primarily uses Go and Kubernetes
+```
