@@ -21,7 +21,7 @@ class RAGApp {
     // ========================================================================
 
     loadConversationFromLocalStorage() {
-        """Load conversation from localStorage on page load."""
+        // Load conversation from localStorage on page load.
         try {
             const saved = localStorage.getItem('ragConversation');
             if (saved) {
@@ -33,7 +33,7 @@ class RAGApp {
     }
 
     saveConversationToLocalStorage() {
-        """Save conversation to localStorage for persistence."""
+        // Save conversation to localStorage for persistence.
         try {
             localStorage.setItem('ragConversation', JSON.stringify(this.conversationHistory));
         } catch (error) {
@@ -42,7 +42,7 @@ class RAGApp {
     }
 
     async saveConversationToServer(name = null) {
-        """Save current conversation to server."""
+        // Save current conversation to server.
         if (this.conversationHistory.length === 0) {
             this.showError('queryError', 'No conversation to save');
             setTimeout(() => this.hideMessage('queryError'), 3000);
@@ -72,7 +72,7 @@ class RAGApp {
     }
 
     async loadSavedConversations() {
-        """Load and display list of saved conversations."""
+        // Load and display list of saved conversations.
         const modal = document.getElementById('conversationsModal');
         const list = document.getElementById('conversationsModalList');
 
@@ -108,7 +108,7 @@ class RAGApp {
     }
 
     async loadConversationById(conversationId) {
-        """Load a specific conversation from server."""
+        // Load a specific conversation from server.
         try {
             const response = await fetch(`/api/conversations/${conversationId}`);
             const data = await response.json();
@@ -128,7 +128,7 @@ class RAGApp {
     }
 
     async deleteConversationById(conversationId) {
-        """Delete a conversation from server."""
+        // Delete a conversation from server.
         if (!confirm(`Delete conversation "${conversationId}"?`)) return;
 
         try {
@@ -146,7 +146,7 @@ class RAGApp {
     }
 
     async exportConversationById(conversationId) {
-        """Export a specific conversation as JSON."""
+        // Export a specific conversation as JSON.
         try {
             const response = await fetch(`/api/conversations/${conversationId}`);
             const data = await response.json();
@@ -166,7 +166,7 @@ class RAGApp {
     }
 
     async exportAllConversations() {
-        """Export all conversations as single JSON file."""
+        // Export all conversations as single JSON file.
         try {
             const response = await fetch('/api/conversations/export');
             const data = await response.json();
@@ -186,7 +186,7 @@ class RAGApp {
     }
 
     async importConversations() {
-        """Import conversations from JSON file."""
+        // Import conversations from JSON file.
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'application/json';
