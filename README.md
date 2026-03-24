@@ -27,20 +27,27 @@ uv sync
 
 ### 3. Configure environment variables
 
-Copy the example env file and add your API key:
+Copy the example env file:
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and add your OpenAI API key:
+Edit `.env` and add your keys:
 
 ```bash
+# Required: OpenAI API key
 OPENAI_API_KEY=sk-xxxxxxxxxxxxx
-OPENAI_MODEL=gpt-3.5-turbo  # optional
+
+# Optional: Use a different OpenAI model
+OPENAI_MODEL=gpt-3.5-turbo
+
+# Optional: HuggingFace token for faster model downloads
+# Get from: https://huggingface.co/settings/tokens
+HF_TOKEN=hf_xxxxxxxxxxxxx
 ```
 
-The project automatically loads variables from `.env` when running.
+The project automatically loads all variables from `.env` when running.
 
 ## Usage
 
@@ -136,8 +143,19 @@ Helpful Answer:
 - `.env.example` - Example environment variables (copy and fill)
 - `.env` - Local environment variables (not committed to git)
 
+## Environment Variables
+
+All variables are loaded from `.env` automatically:
+
+- **OPENAI_API_KEY** (required) - Your OpenAI API key for GPT models
+- **OPENAI_MODEL** (optional) - Defaults to `gpt-3.5-turbo`, can use `gpt-4` or other models
+- **HF_TOKEN** (optional) - HuggingFace token for faster model downloads without rate limits
+  - Without token: ~100 req/hour limit
+  - With token: Significantly higher limits
+  - Get your token from: https://huggingface.co/settings/tokens
+
 ## Notes
 
 - The embedding model (`all-MiniLM-L6-v2`) is lightweight and runs on CPU
 - For larger deployments, consider external vector databases like Pinecone, Weaviate, or Milvus
-- You can swap embeddings model by passing `model_name` to `SimpleRAG()`
+- You can swap embeddings model by passing `embedding_model` to `SimpleRAG()`

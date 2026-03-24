@@ -8,6 +8,7 @@ from sentence_transformers import SentenceTransformer
 from openai import OpenAI
 
 # Load environment variables from .env file
+# This loads OPENAI_API_KEY, HF_TOKEN, and other config
 load_dotenv(Path(__file__).parent / ".env")
 
 

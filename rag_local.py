@@ -8,8 +8,15 @@ Example:
     python rag_local.py
 """
 
+import os
+from pathlib import Path
+from dotenv import load_dotenv
 import numpy as np
 from sentence_transformers import SentenceTransformer
+
+# Load environment variables from .env file
+# This loads HF_TOKEN for faster model downloads and higher rate limits
+load_dotenv(Path(__file__).parent / ".env")
 
 
 class SimpleRAGLocal:
